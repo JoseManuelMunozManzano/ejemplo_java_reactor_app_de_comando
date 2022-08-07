@@ -22,11 +22,11 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		// Trabajando con Flux para realizar nuestro primer Observable
-		Flux<Usuario> nombres = Flux.just("José Muñoz", "Adriana López", "María Pérez", "Tania Fernández",
-						"Ferney Rodríguez", "Bruce Lee", "Bruce Willis")
-				.map(nombre -> new Usuario(nombre.split(" ")[0].toUpperCase(), nombre.split(" ")[1].toUpperCase()))
-				// Operador filter para filtrar datos. Se retorna un boolean y si este es true lo deja pasar.
+		// INMUTABILIDAD DE LOS OBSERVABLES
+		Flux<String> nombres = Flux.just("José Muñoz", "Adriana López", "María Pérez", "Tania Fernández",
+						"Ferney Rodríguez", "Bruce Lee", "Bruce Willis");
+
+		nombres.map(nombre -> new Usuario(nombre.split(" ")[0].toUpperCase(), nombre.split(" ")[1].toUpperCase()))
 				.filter(usuario -> usuario.getNombre().equalsIgnoreCase("bruce"))
 				.doOnNext(usuario -> {
 					if (usuario == null) {
@@ -40,6 +40,8 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 					return usuario;
 				});
 
+		// Si me subscribo a nombres imprime los Strings originales, puesto que cada transformación devuelve
+		// una nueva instancia
 		nombres.subscribe(e -> log.info(e.toString()),
 				error -> log.error(error.getMessage()),
 				new Runnable() {
