@@ -23,15 +23,16 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// Trabajando con Flux para realizar nuestro primer Observable
-		Flux<Usuario> nombres = Flux.just("José M", "Adriana", "María", "Tania", "Ferney")
-				// Usando map retornamos otro tipo de dato diferente. Ver la declaración Flux<Usuario>
-				.map(nombre -> new Usuario(nombre.toUpperCase(), null))
-				// Ahora tenemos que trabajar con tipo de datos Usuario
+		Flux<Usuario> nombres = Flux.just("José Muñoz", "Adriana López", "María Pérez", "Tania Fernández",
+						"Ferney Rodríguez", "Bruce Lee", "Bruce Willis")
+				.map(nombre -> new Usuario(nombre.split(" ")[0].toUpperCase(), nombre.split(" ")[1].toUpperCase()))
+				// Operador filter para filtrar datos. Se retorna un boolean y si este es true lo deja pasar.
+				.filter(usuario -> usuario.getNombre().equalsIgnoreCase("bruce"))
 				.doOnNext(usuario -> {
 					if (usuario == null) {
 						throw new RuntimeException("Nombres no pueden ser vacíos");
 					}
-					System.out.println(usuario.getNombre());
+					System.out.println(usuario.getNombre().concat(" ").concat(usuario.getApellido()));
 				})
 				.map(usuario -> {
 					String nombre = usuario.getNombre().toLowerCase();
@@ -39,7 +40,6 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 					return usuario;
 				});
 
-		// Tenemos usuarios
 		nombres.subscribe(e -> log.info(e.toString()),
 				error -> log.error(error.getMessage()),
 				new Runnable() {
