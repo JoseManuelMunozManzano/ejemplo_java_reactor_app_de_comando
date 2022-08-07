@@ -23,13 +23,19 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		// Trabajando con Flux para realizar nuestro primer Observable
 		Flux<String> nombres = Flux.just("José M", "Adriana", "María", "Tania", "Ferney")
+				.map(nombre -> {return nombre.toUpperCase();})
 				// Emulamos algún tipo de error
 				.doOnNext(e -> {
 					if (e.isEmpty()) {
 						throw new RuntimeException("Nombres no pueden ser vacíos");
 					}
 					System.out.println(e);
-				});
+				})
+		// INMUTABLE
+		// Todas las operaciones que se realizan con los operadores NO MODIFICAN EL FLUJO ORIGINAL, sino que retornan
+		// una nueva instancia con los datos transformados.
+				.map(nombre -> {return nombre.toLowerCase();});
+
 
 		// Nos suscribimos al Observable
 		// En el subscriber también se pueden realizar tareas usando funciones anónimas al consumir la información.
