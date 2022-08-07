@@ -22,7 +22,7 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// Trabajando con Flux para realizar nuestro primer Observable
-		Flux<String> nombres = Flux.just("José M", "Adriana", "", "Tania", "Ferney")
+		Flux<String> nombres = Flux.just("José M", "Adriana", "María", "Tania", "Ferney")
 				// Emulamos algún tipo de error
 				.doOnNext(e -> {
 					if (e.isEmpty()) {
@@ -34,6 +34,19 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 		// Nos suscribimos al Observable
 		// En el subscriber también se pueden realizar tareas usando funciones anónimas al consumir la información.
 		// También se puede manejar cualquier tipo de error que pueda ocurrir en el segundo parámetro.
-		nombres.subscribe(log::info, error -> log.error(error.getMessage()));
+		//
+		// Tercer parámetro
+		// Hay otra forma del método subscribe que nos permite hacer una tarea cuando se completa
+		// la subscripción en el onComplete, que se implementa con un Runnable utilizando hilos.
+		// Es decir, cuando el Observable termina CORRECTAMENTE de emitir el último elemento.
+		nombres.subscribe(log::info,
+				error -> log.error(error.getMessage()),
+				new Runnable() {
+					@Override
+					public void run() {
+						log.info("Ha finalizado la ejecución del observable con éxito!");
+					}
+				}
+		);
 	}
 }
