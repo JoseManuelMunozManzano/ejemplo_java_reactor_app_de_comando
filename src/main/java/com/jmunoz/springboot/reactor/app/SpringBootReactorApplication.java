@@ -26,7 +26,9 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 		Flux<String> nombres = Flux.just("José Muñoz", "Adriana López", "María Pérez", "Tania Fernández",
 						"Ferney Rodríguez", "Bruce Lee", "Bruce Willis");
 
-		nombres.map(nombre -> new Usuario(nombre.split(" ")[0].toUpperCase(), nombre.split(" ")[1].toUpperCase()))
+		// Todas estas transformaciones devuelven NUEVAS instancias en memoria y la última operación devuelve el valor
+		// en la variable usuarios.
+		Flux<Usuario> usuarios =  nombres.map(nombre -> new Usuario(nombre.split(" ")[0].toUpperCase(), nombre.split(" ")[1].toUpperCase()))
 				.filter(usuario -> usuario.getNombre().equalsIgnoreCase("bruce"))
 				.doOnNext(usuario -> {
 					if (usuario == null) {
@@ -40,9 +42,8 @@ public class SpringBootReactorApplication implements CommandLineRunner {
 					return usuario;
 				});
 
-		// Si me subscribo a nombres imprime los Strings originales, puesto que cada transformación devuelve
-		// una nueva instancia
-		nombres.subscribe(e -> log.info(e.toString()),
+		// Ahora se muestra la información de usuarios
+		usuarios.subscribe(e -> log.info(e.toString()),
 				error -> log.error(error.getMessage()),
 				new Runnable() {
 					@Override
